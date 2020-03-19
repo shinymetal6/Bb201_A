@@ -24,7 +24,22 @@ typedef struct {
 	uint8_t		pad[PAD_NUMBER];
 } s_flash_config;
 
-extern	uint16_t FlashOps_ReadHeaders(void);
-extern	uint16_t FlashOps_Setup(void);
+typedef struct {
+	uint32_t	id;
+	uint32_t 	page_ptr;
+	uint32_t	size;
+	uint32_t	flags;
+} s_img_descriptor_config;
+#define	MAX_NUM_IMAGES		16
+#define	NUM_PAGE_IMAGE		128
+#define	DESCRIPTOR_PAGE		1
+#define	IMAGE_START_PAGE	2
+#define	IMAGE_NOT_PRESENT_FLAG	0x00000000
+#define	IMAGE_PRESENT_FLAG		0x00000001
+
+uint16_t FlashOps_ReadHeaders(void);
+uint16_t FlashOps_Setup(void);
+uint16_t FlashOpsCheckImages(void);
+uint16_t FlashOpsFormatImages(void);
 
 #endif /* INC_FLASHOPS_H_ */

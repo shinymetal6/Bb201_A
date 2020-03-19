@@ -25,6 +25,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "Lcd/Lcd.h"
+#include "SpiFlash/FlashOps.h"
 
 /* USER CODE END Includes */
 
@@ -95,7 +96,8 @@ static void MX_TIM7_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-uint16_t	flash_present;
+uint16_t	flash_present, number_of_images;
+uint16_t	lcd_brightness, lcd_brightness_direction;
 
 /* USER CODE END 0 */
 
@@ -150,16 +152,34 @@ int main(void)
   MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
   flash_present= FlashOps_Setup();
+  if ( flash_present )
+	  number_of_images = FlashOpsCheckImages();
   HAL_TIM_PWM_Start(&htim15,TIM_CHANNEL_1);
   LcdInit();
   HAL_TIM_Base_Start_IT(&htim7);
   ControlInit();
+  lcd_brightness=0;
+  lcd_brightness_direction = 1; // up
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  if ( lcd_brightness_direction == 1)
+	  {
+		  lcd_brightness++;
+		  if ( lcd_brightness == 0xffff)
+			  lcd_brightness_direction = 0;
+	  }
+	  if ( lcd_brightness_direction == 0)
+	  {
+		  lcd_brightness--;
+		  if ( lcd_brightness == 0)
+			  lcd_brightness_direction = 1;
+	  }
+	  LcdSetBrightness(lcd_brightness);
+	  //HAL_Delay(10);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
